@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- Primary Meta Tags -->
+    <title>AutoModerator Rule Generator - Visual Reddit AutoMod Config Builder</title>
+    <meta name="title" content="AutoModerator Rule Generator - Visual Reddit AutoMod Config Builder">
+    <meta name="description" content="Free visual tool to create Reddit AutoModerator rules without coding. Build filters, karma checks, auto-responses, and moderation rules easily. No YAML knowledge required.">
+    <meta name="keywords" content="reddit automoderator, automod generator, reddit moderation tool, automod rules, reddit bot, moderator tools, reddit automation, automod config, reddit filters, subreddit moderation, yaml generator, reddit mod tools, spam filter reddit, karma filter, account age filter">
+    <meta name="author" content="Aryan Raj">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aryan-raj-7167.github.io/automod-generator/">
+    <meta property="og:title" content="AutoModerator Rule Generator - Visual Reddit AutoMod Config Builder">
+    <meta property="og:description" content="Free visual tool to create Reddit AutoModerator rules without coding. Build filters, karma checks, auto-responses, and moderation rules easily.">
+    <meta property="og:image" content="https://aryan-raj-7167.github.io/automod-generator/images/preview.png">
+    <meta property="og:site_name" content="AutoModerator Rule Generator">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aryan-raj-7167.github.io/automod-generator/">
+    <meta property="twitter:title" content="AutoModerator Rule Generator - Visual Reddit AutoMod Config Builder">
+    <meta property="twitter:description" content="Free visual tool to create Reddit AutoModerator rules without coding. Build filters, karma checks, auto-responses, and moderation rules easily.">
+    <meta property="twitter:image" content="https://aryan-raj-7167.github.io/automod-generator/images/preview.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://aryan-raj-7167.github.io/automod-generator/">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Structured Data / Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "AutoModerator Rule Generator",
+      "description": "Visual tool to create Reddit AutoModerator rules without writing YAML code. Build moderation filters, karma checks, and automated responses easily.",
+      "url": "https://aryan-raj-7167.github.io/automod-generator/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Aryan Raj",
+        "url": "https://github.com/Aryan-Raj-7167"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "ratingCount": "1"
+      },
+      "featureList": [
+        "Visual rule builder",
+        "No YAML knowledge required",
+        "Search checks and filters",
+        "Karma and account age conditions",
+        "Auto-responses and notifications",
+        "One-click copy to clipboard",
+        "Multiple rule support",
+        "Real-time YAML preview"
+      ]
+    }
+    </script>
+    
+    <!-- Additional Schema for SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "AutoModerator Rule Generator",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      },
+      "operatingSystem": "Any"
+    }
+    </script>
+    
+    <!-- React and Dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#root" class="sr-only focus:not-sr-only">Skip to main content</a>
+    
+    <!-- Main Application Container -->
+    <div id="root"></div>
+    
+    <!-- No JavaScript Warning -->
+    <noscript>
+        <div style="padding: 20px; text-align: center; background: #fee; border: 2px solid #c00; margin: 20px;">
+            <h2>JavaScript Required</h2>
+            <p>This application requires JavaScript to be enabled in your browser to function properly.</p>
+            <p>Please enable JavaScriptand reload the page.</p>
+        </div>
+    </noscript>
+    
+    <!-- Application Script -->
+    <script src="automod.js" type="text/babel"></script>
+    <script type="text/babel">
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AutoModGenerator />);
+    </script>
+</body>
+</html>
