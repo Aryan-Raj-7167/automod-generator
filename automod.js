@@ -185,6 +185,15 @@ function AutoModGenerator() {
                 yaml += `moderators_exempt: true\n`;
             }
 
+            // Check if ignore_blockquotes should be added (BEFORE search checks)
+            const checksBodyOrTitle = rule.searchChecks.some(c =>
+                c.fields.includes('body') || c.fields.includes('title')
+            );
+            
+            if (rule.ignoreBlockquotes && checksBodyOrTitle) {
+                yaml += `ignore_blockquotes: true\n`;
+            }
+
             rule.searchChecks.forEach(check => {
                 const prefix = check.reverse ? '~' : '';
                 const fieldStr = check.fields.join('+');
@@ -253,14 +262,6 @@ function AutoModGenerator() {
                 if (rule.messageSubject) {
                     yaml += `message_subject: "${rule.messageSubject}"\n`;
                 }
-            }
-
-            const checksBodyOrTitle = rule.searchChecks.some(c =>
-                c.fields.includes('body') || c.fields.includes('title')
-            );
-
-            if (rule.ignoreBlockquotes && checksBodyOrTitle) {
-                yaml += `ignore_blockquotes: true\n`;
             }
 
             return yaml;
@@ -573,7 +574,8 @@ function AutoModGenerator() {
                                             >
                                                 <option value="includes-word">Includes Word - Matches whole words only</option>
                                                 <option value="includes">Includes - Matches anywhere (even partial)</option>
-                                                <option value="full-exact">Full Exact - Must match completely</option>                                                <option value="starts-with">Starts With - Must begin with text</option>
+                                                <option value="full-exact">Full Exact - Must match completely</option>
+                                                <option value="starts-with">Starts With - Must begin with text</option>
                                                 <option value="ends-with">Ends With - Must end with text</option>
                                                 <option value="regex">Regular Expression - Advanced patterns</option>
                                             </select>
@@ -983,3 +985,5 @@ function AutoModGenerator() {
         </div>
     );
 }
+
+export default AutoModGenerator;
