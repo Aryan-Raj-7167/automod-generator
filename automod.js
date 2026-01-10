@@ -1,6 +1,8 @@
 const { useState } = React;
 
 function AutoModGenerator() {
+    const isMobile = window.innerWidth < 1024;
+    const [showYaml, setShowYaml] = useState(!isMobile);
     const [rules, setRules] = useState([{
         id: 1,
         type: 'any',
@@ -147,12 +149,13 @@ function AutoModGenerator() {
 
     const addAction = () => {
         const newRules = [...rules];
-        newRules[activeRule].actions.push({
+        newRules[activeRule].actions = [{
             type: 'remove',
             reason: ''
-        });
+        }];
         setRules(newRules);
     };
+
 
     const updateAction = (index, field, value) => {
         const newRules = [...rules];
@@ -175,8 +178,12 @@ function AutoModGenerator() {
             }
 
             if (rule.type !== 'any') yaml += `type: ${rule.type}\n`;
-            if (rule.priority) yaml += `priority: ${rule.priority}\n`;
-            yaml += `moderators_exempt: ${rule.moderatorsExempt}\n`;
+            if (rule.priority !== '') {
+                yaml += `priority: ${Number(rule.priority)}\n`;
+            }
+            if (rule.moderatorsExempt && rule.type !== 'comment') {
+                yaml += `moderators_exempt: true\n`;
+            }
 
             rule.searchChecks.forEach(check => {
                 const prefix = check.reverse ? '~' : '';
@@ -184,7 +191,7 @@ function AutoModGenerator() {
                 const modifier = check.caseSensitive ? `(${check.modifier}, case-sensitive)` : `(${check.modifier})`;
                 const values = check.values.filter(v => v.trim()).map(v => {
                     if (check.modifier === 'regex') {
-                        return `'${v}'`;
+                            return `"${v.replace(/"/g, '\\"')}"`;
                     }
                     return `"${v}"`;
                 }).join(', ');
@@ -207,14 +214,13 @@ function AutoModGenerator() {
                 });
             }
 
-            rule.actions.forEach(action => {
-                if (action.type) {
-                    yaml += `action: ${action.type}\n`;
-                    if (action.reason) {
-                        yaml += `action_reason: "${action.reason}"\n`;
-                    }
+            const action = rule.actions[0];
+            if (action && action.type){
+                yaml += `action: ${action.type}\n`;
+                if (action.reason){
+                    yaml += `action_reason: "${action.reason}"\n`;
                 }
-            });
+            }
 
             if (rule.comment) {
                 yaml += `comment: |\n`;
@@ -249,7 +255,11 @@ function AutoModGenerator() {
                 }
             }
 
-            if (rule.ignoreBlockquotes) {
+            const checksBodyOrTitle = rule.searchChecks.some(c =>
+                c.fields.includes('body') || c.fields.includes('title')
+            );
+
+            if (rule.ignoreBlockquotes && checksBodyOrTitle) {
                 yaml += `ignore_blockquotes: true\n`;
             }
 
@@ -258,9 +268,21 @@ function AutoModGenerator() {
     };
 
     const copyToClipboard = () => {
+        const rule = rules[activeRule];
+
+        if (
+            !rule.standardCondition &&
+            rule.searchChecks.length === 0 &&
+            rule.conditions.length === 0
+        ) {
+            alert('❌ Rule has no conditions. Add a search check, author condition, or standard rule.');
+            return;
+        }
+
         navigator.clipboard.writeText(generateYAML());
         alert('✅ Copied to clipboard!');
     };
+
 
     const currentRule = rules[activeRule];
 
@@ -324,7 +346,7 @@ function AutoModGenerator() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                     <div className="lg:col-span-2 space-y-4">
                         {/* Rule Tabs */}
                         <div className="bg-white rounded-lg shadow p-4">
@@ -518,7 +540,7 @@ function AutoModGenerator() {
                                             <label className="block text-xs font-semibold text-gray-700 mb-2">
                                                 <i className="fa-solid fa-bullseye"></i> What to check? (Select one or more)
                                             </label>
-                                            <div className="grid grid-cols-2 gap-2">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                 {fieldOptions.map(field => (
                                                     <label key={field.value} className={`flex items-start p-2 rounded cursor-pointer transition ${check.fields.includes(field.value) ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 border border-gray-300 hover:bg-gray-100'}`}>
                                                         <input
@@ -551,9 +573,7 @@ function AutoModGenerator() {
                                             >
                                                 <option value="includes-word">Includes Word - Matches whole words only</option>
                                                 <option value="includes">Includes - Matches anywhere (even partial)</option>
-                                                <option value="full-exact">Full Exact - Must match completely</option>
-                                                <option value="full-text">Full Text - Ignores spacing/punctuation</option>
-                                                <option value="starts-with">Starts With - Must begin with text</option>
+                                                <option value="full-exact">Full Exact - Must match completely</option>                                                <option value="starts-with">Starts With - Must begin with text</option>
                                                 <option value="ends-with">Ends With - Must end with text</option>
                                                 <option value="regex">Regular Expression - Advanced patterns</option>
                                             </select>
@@ -924,7 +944,7 @@ function AutoModGenerator() {
 
                     {/* Right Panel - Generated Code */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg shadow p-4 sticky top-4">
+                        <div className="bg-white rounded-lg shadow p-4 lg:sticky lg:top-4">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                                     <i className="fa-solid fa-code text-green-600"></i> Generated YAML
