@@ -175,8 +175,12 @@ function AutoModGenerator() {
             }
 
             if (rule.type !== 'any') yaml += `type: ${rule.type}\n`;
-            if (rule.priority) yaml += `priority: ${rule.priority}\n`;
-            yaml += `moderators_exempt: ${rule.moderatorsExempt}\n`;
+            if (rule.priority !== '') {
+                yaml += `priority: ${Number(rule.priority)}\n`;
+            }
+            if (rule.moderatorsExempt) {
+                yaml += `moderators_exempt: true\n`;
+            }
 
             rule.searchChecks.forEach(check => {
                 const prefix = check.reverse ? '~' : '';
@@ -258,6 +262,17 @@ function AutoModGenerator() {
     };
 
     const copyToClipboard = () => {
+        const rule = rules[activeRule];
+
+        if (
+            !rule.standardCondition &&
+            rule.searchChecks.length === 0 &&
+            rule.conditions.length === 0
+        ) {
+            alert('❌ Rule has no conditions. Add a search check, author condition, or standard rule.');
+            return;
+        }
+
         navigator.clipboard.writeText(generateYAML());
         alert('✅ Copied to clipboard!');
     };
