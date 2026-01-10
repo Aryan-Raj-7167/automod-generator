@@ -147,12 +147,13 @@ function AutoModGenerator() {
 
     const addAction = () => {
         const newRules = [...rules];
-        newRules[activeRule].actions.push({
+        newRules[activeRule].actions = [{
             type: 'remove',
             reason: ''
-        });
+        }];
         setRules(newRules);
     };
+
 
     const updateAction = (index, field, value) => {
         const newRules = [...rules];
@@ -175,16 +176,11 @@ function AutoModGenerator() {
             }
 
             if (rule.type !== 'any') yaml += `type: ${rule.type}\n`;
-            if (rule.priority) yaml += `priority: ${rule.priority}\n`;
-            yaml += `moderators_exempt: ${rule.moderatorsExempt}\n`;
-
-            // Check if ignore_blockquotes should be added (BEFORE search checks)
-            const checksBodyOrTitle = rule.searchChecks.some(c =>
-                c.fields.includes('body') || c.fields.includes('title')
-            );
-            
-            if (rule.ignoreBlockquotes && checksBodyOrTitle) {
-                yaml += `ignore_blockquotes: true\n`;
+            if (rule.priority !== '') {
+                yaml += `priority: ${Number(rule.priority)}\n`;
+            }
+            if (rule.moderatorsExempt && rule.type !== 'comment') {
+                yaml += `moderators_exempt: true\n`;
             }
 
             rule.searchChecks.forEach(check => {
@@ -193,7 +189,7 @@ function AutoModGenerator() {
                 const modifier = check.caseSensitive ? `(${check.modifier}, case-sensitive)` : `(${check.modifier})`;
                 const values = check.values.filter(v => v.trim()).map(v => {
                     if (check.modifier === 'regex') {
-                        return `'${v}'`;
+                            return `"${v.replace(/"/g, '\\"')}"`;
                     }
                     return `"${v}"`;
                 }).join(', ');
@@ -216,14 +212,13 @@ function AutoModGenerator() {
                 });
             }
 
-            rule.actions.forEach(action => {
-                if (action.type) {
-                    yaml += `action: ${action.type}\n`;
-                    if (action.reason) {
-                        yaml += `action_reason: "${action.reason}"\n`;
-                    }
+            const action = rule.actions[0];
+            if (action && action.type){
+                yaml += `action: ${action.type}\n`;
+                if (action.reason){
+                    yaml += `action_reason: "${action.reason}"\n`;
                 }
-            });
+            }
 
             if (rule.comment) {
                 yaml += `comment: |\n`;
@@ -258,14 +253,34 @@ function AutoModGenerator() {
                 }
             }
 
+            const checksBodyOrTitle = rule.searchChecks.some(c =>
+                c.fields.includes('body') || c.fields.includes('title')
+            );
+
+            if (rule.ignoreBlockquotes && checksBodyOrTitle) {
+                yaml += `ignore_blockquotes: true\n`;
+            }
+
             return yaml;
         }).join('---\n');
     };
 
     const copyToClipboard = () => {
+        const rule = rules[activeRule];
+
+        if (
+            !rule.standardCondition &&
+            rule.searchChecks.length === 0 &&
+            rule.conditions.length === 0
+        ) {
+            alert('❌ Rule has no conditions. Add a search check, author condition, or standard rule.');
+            return;
+        }
+
         navigator.clipboard.writeText(generateYAML());
         alert('✅ Copied to clipboard!');
     };
+
 
     const currentRule = rules[activeRule];
 
@@ -556,9 +571,7 @@ function AutoModGenerator() {
                                             >
                                                 <option value="includes-word">Includes Word - Matches whole words only</option>
                                                 <option value="includes">Includes - Matches anywhere (even partial)</option>
-                                                <option value="full-exact">Full Exact - Must match completely</option>
-                                                <option value="full-text">Full Text - Ignores spacing/punctuation</option>
-                                                <option value="starts-with">Starts With - Must begin with text</option>
+                                                <option value="full-exact">Full Exact - Must match completely</option>                                                <option value="starts-with">Starts With - Must begin with text</option>
                                                 <option value="ends-with">Ends With - Must end with text</option>
                                                 <option value="regex">Regular Expression - Advanced patterns</option>
                                             </select>
@@ -968,5 +981,3 @@ function AutoModGenerator() {
         </div>
     );
 }
-
-export default AutoModGenerator;
