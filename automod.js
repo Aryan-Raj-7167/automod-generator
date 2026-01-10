@@ -985,5 +985,3 @@ function AutoModGenerator() {
         </div>
     );
 }
-
-export default AutoModGenerator;
